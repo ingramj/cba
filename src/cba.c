@@ -1,8 +1,18 @@
 #include "cba.h"
 #include <assert.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#define UINT_BYTES (sizeof(unsigned int))
+#define UINT_BITS (UINT_BYTES * CHAR_BIT)
+
+/* Mask a particular bit within a uint. */
+#define bitmask(bit) (1 << ((bit) % UINT_BITS))
+
+/* Determine how many uints are needed to store a number of bits. */
+#define uint_array_size(bits) (bits <= 0 ? 0 : (((bits) - 1) / UINT_BITS + 1))
 
 struct bitarray {
 	long bits;
