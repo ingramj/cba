@@ -74,6 +74,7 @@ cba_getbit(struct bitarray *ba, long i)
 	unsigned int b;
 
 	i = index(ba, i);
+	if (i < 0) return -1;
 	b = ba->array[i / UINT_BITS] & bitmask(i);
 	return (b > 0) ? 1 : 0;
 }

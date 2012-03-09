@@ -1,5 +1,5 @@
-CFLAGS=-fPIC -I include -ansi -Wall -Wextra -Werror -pedantic
-LDFLAGS=-fPIC -Wall -Wextra -Werror
+CFLAGS=-fPIC -I include -ansi -Wall -Wextra -Werror -pedantic -g -O0
+LDFLAGS=-fPIC -Wall -Wextra -Werror -g
 
 LIBS=lib/libcba.so lib/libcba.a
 
