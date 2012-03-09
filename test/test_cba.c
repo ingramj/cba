@@ -49,7 +49,7 @@ test_allocated_clear(void)
 	r = 1;
 	ba = cba_alloc(100);
 	for (i = 0; i < 100; i++) {
-		if (cba_getbit(ba, i)) {
+		if (cba_get(ba, i)) {
 			r = 0;
 			break;
 		}
@@ -67,7 +67,7 @@ test_negative_indices(void)
 	r = 1;
 	ba = cba_alloc(100);
 	for (i = -100; i < 0; i++) {
-		if (cba_getbit(ba, i) != 0) {
+		if (cba_get(ba, i) != 0) {
 			r = 0;
 			break;
 		}
@@ -84,14 +84,92 @@ test_out_of_bounds(void)
 
 	r = 1;
 	ba = cba_alloc(10);
-	if (cba_getbit(ba, 10) >= 0) {
+	if (cba_get(ba, 10) >= 0) {
 		r = 0;
 	}
-	if (cba_getbit(ba, 50) >= 0) {
+	if (cba_get(ba, 50) >= 0) {
 		r = 0;
 	}
-	if (cba_getbit(ba, -11) >= 0) {
+	if (cba_get(ba, -11) >= 0) {
 		r = 0;
+	}
+	cba_free(ba);
+	return r;
+}
+
+int
+test_cba_set(void)
+{
+	struct bitarray *ba;
+	int r, i;
+
+	r = 1;
+	ba = cba_alloc(100);
+	for (i = 0; i < 100; i++) {
+		if (cba_get(ba, i) != 0) {
+			r = 0;
+			break;
+		}
+		if (cba_set(ba, i) < 0) {
+			r = 0;
+			break;
+		}
+		if (cba_get(ba, i) != 1) {
+			r = 0;
+			break;
+		}
+	}
+	cba_free(ba);
+	return r;
+}
+
+int
+test_cba_clear(void)
+{
+	struct bitarray *ba;
+	int r, i;
+
+	r = 1;
+	ba = cba_alloc(100);
+	for (i = 0; i < 100; i++) {
+		if (cba_clear(ba, i) < 0) {
+			r = 0;
+			break;
+		}
+		if (cba_get(ba, i) != 0) {
+			r = 0;
+			break;
+		}
+	}
+	cba_free(ba);
+	return r;
+}
+
+int
+test_set_then_clear(void)
+{
+	struct bitarray *ba;
+	int r, i;
+
+	r = 1;
+	ba = cba_alloc(100);
+	for (i = 0; i < 100; i++) {
+		if (cba_set(ba, i) < 0) {
+			r = 0;
+			break;
+		}
+		if (cba_get(ba, i) != 1) {
+			r = 0;
+			break;
+		}
+		if (cba_clear(ba, i) < 0) {
+			r = 0;
+			break;
+		}
+		if (cba_get(ba, i) != 0) {
+			r = 0;
+			break;
+		}
 	}
 	cba_free(ba);
 	return r;
@@ -124,6 +202,9 @@ main(void)
 	RUN_TEST(test_allocated_clear);
 	RUN_TEST(test_negative_indices);
 	RUN_TEST(test_out_of_bounds);
+	RUN_TEST(test_cba_set);
+	RUN_TEST(test_cba_clear);
+	RUN_TEST(test_set_then_clear);
 
 	printf("%d tests, %d passed, %d failed\n", failed + passed, passed, failed);
 

@@ -79,7 +79,7 @@ cba_size(struct bitarray *ba)
 
 
 int
-cba_getbit(struct bitarray *ba, long i)
+cba_get(struct bitarray *ba, long i)
 {
 	unsigned int b;
 
@@ -87,4 +87,26 @@ cba_getbit(struct bitarray *ba, long i)
 	if (i < 0) return -1;
 	b = ba->array[i / UINT_BITS] & bitmask(i);
 	return (b > 0) ? 1 : 0;
+}
+
+
+int
+cba_set(struct bitarray *ba, long i)
+{
+	i = index(ba, i);
+	if (i < 0) return -1;
+
+	ba->array[i / UINT_BITS] |= bitmask(i);
+	return 1;
+}
+
+
+int
+cba_clear(struct bitarray *ba, long i)
+{
+	i = index(ba, i);
+	if (i < 0) return -1;
+
+	ba->array[i / UINT_BITS] &= ~bitmask(i);
+	return 1;
 }
