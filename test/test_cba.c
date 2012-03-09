@@ -97,6 +97,55 @@ START_TEST(test_set_then_clear) {
 } END_TEST
 
 
+START_TEST(test_cba_set_all) {
+	int i;
+
+	ba = cba_alloc(100);
+	cba_set_all(ba);
+	for (i = 0; i < 100; i++) {
+		fail_if(cba_get(ba, i) != 1);
+	}
+} END_TEST
+
+
+START_TEST(test_set_all_empty) {
+	ba = cba_alloc(0);
+	cba_set_all(ba);
+} END_TEST
+
+
+START_TEST(test_cba_clear_all) {
+	int i;
+
+	ba = cba_alloc(100);
+	cba_clear_all(ba); /* should do nothing. */
+	for (i = 0; i < 100; i++) {
+		fail_if(cba_get(ba, i) != 0);
+	}
+} END_TEST
+
+
+START_TEST(test_clear_all_empty) {
+	ba = cba_alloc(0);
+	cba_clear_all(ba);
+} END_TEST
+
+
+START_TEST(test_set_all_then_clear_all) {
+	int i;
+
+	ba = cba_alloc(100);
+	cba_set_all(ba);
+	for (i = 0; i < 100; i++) {
+		fail_if(cba_get(ba, i) != 1);
+	}
+	cba_clear_all(ba);
+	for (i = 0; i < 100; i++) {
+		fail_if(cba_get(ba, i) != 0);
+	}
+} END_TEST
+
+
 int
 main(void)
 {
@@ -111,6 +160,11 @@ main(void)
 	RUN_TEST(test_cba_set);
 	RUN_TEST(test_cba_clear);
 	RUN_TEST(test_set_then_clear);
+	RUN_TEST(test_cba_set_all);
+	RUN_TEST(test_set_all_empty);
+	RUN_TEST(test_cba_clear_all);
+	RUN_TEST(test_clear_all_empty);
+	RUN_TEST(test_set_all_then_clear_all);
 
 	printf("%d tests, %d passed, %d failed\n", failed + passed, passed, failed);
 
