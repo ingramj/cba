@@ -10,9 +10,35 @@
 #include <stdio.h>
 
 int
-test_cba_true(void)
+test_cba_alloc(void)
 {
-	return cba_true();
+	struct bitarray *ba;
+	int r;
+
+	ba = cba_alloc(100);
+	if (ba && cba_size(ba) == 100) {
+		r = 1;
+	} else {
+		r = 0;
+	}
+	cba_free(ba);
+	return r;
+}
+
+int
+test_cba_allocated_clear(void)
+{
+	struct bitarray *ba;
+	int i, r;
+
+	r = 1;
+	ba = cba_alloc(100);
+	for (i = 0; i < 100; i++) {
+		if (cba_getbit(ba, i))
+			r = 0;
+	}
+	cba_free(ba);
+	return r;
 }
 
 void fail(const char *s);
@@ -36,7 +62,8 @@ main(void)
 	int passed, failed;
 	passed = failed = 0;
 
-	RUN_TEST(test_cba_true);
+	RUN_TEST(test_cba_alloc);
+	RUN_TEST(test_cba_allocated_clear);
 
 	printf("%d tests, %d passed, %d failed\n", failed + passed, passed, failed);
 
