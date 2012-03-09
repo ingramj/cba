@@ -16,7 +16,7 @@ lib/libcba.a: src/cba.o
 	ar rc -o $@ $<
 
 src/cba.o: src/cba.c include/cba.h
-test/test_cba.o: test/test_cba.c include/cba.h
+test/test_cba.o: test/test_cba.c include/cba.h test/test_cba.h
 test/test_cba: test/test_cba.o lib/libcba.a
 
 .PHONY: test debug_test

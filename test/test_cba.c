@@ -1,195 +1,101 @@
 /* A cheesy testing program for libcba.
  *
- * Each test is a function with no arguments, which returns true if
- * the test passes, and false if it fails. Each test should be added
- * to main() using the RUN_TEST() macro, which prints a message for
- * each test, and increments pass/fail counters.
+ * Tests are defined using the START_TEST(name) macro, and must end with
+ * END_TEST. They are run by adding a RUN_TEST(name) call to main(), at the
+ * bottom of this file.
+ *
+ * An uninitialized bitarray struct named ba is available inside each test. It
+ * must be initialized before use, but it will be automatically freed when the
+ * test ends.
+ *
+ * The fail_if() and fail_unless() macros can be used to test boolean
+ * expressions. fail_if() will cause the test to fail if the the expression is
+ * true, and fail_unless() will fail if the expression is false.
+ *
+ * IMPORTANT: There should be no return statements inside of the test. To
+ * return early, use the pass() and fail(mesg) macros; otherwise a memory leak
+ * may occur.
  */
 
 #include "cba.h"
+#include "test_cba.h"
 #include <stdio.h>
 
-int
-test_cba_alloc(void)
-{
-	struct bitarray *ba;
-	int r;
-
+START_TEST(test_cba_alloc) {
 	ba = cba_alloc(100);
-	if (ba && cba_size(ba) == 100) {
-		r = 1;
-	} else {
-		r = 0;
-	}
-	cba_free(ba);
-	return r;
-}
+	fail_unless(ba && cba_size(ba) == 100);
+} END_TEST
 
-int test_allocate_zero(void)
-{
-	struct bitarray *ba;
-	int r;
 
+START_TEST(test_allocate_zero) {
 	ba = cba_alloc(0);
-	if (ba && cba_size(ba) == 0) {
-		r = 1;
-	} else {
-		r = 0;
-	}
-	cba_free(ba);
-	return r;
-}
+	fail_unless(ba && cba_size(ba) == 0);
+} END_TEST
 
-int
-test_allocated_clear(void)
-{
-	struct bitarray *ba;
-	int i, r;
 
-	r = 1;
+START_TEST(test_allocated_clear) {
+	int i;
+
 	ba = cba_alloc(100);
 	for (i = 0; i < 100; i++) {
-		if (cba_get(ba, i)) {
-			r = 0;
-			break;
-		}
+		fail_if(cba_get(ba, i));
 	}
-	cba_free(ba);
-	return r;
-}
+} END_TEST
 
-int
-test_negative_indices(void)
-{
-	struct bitarray *ba;
-	int i, r;
 
-	r = 1;
+START_TEST(test_negative_indices) {
+	int i;
+
 	ba = cba_alloc(100);
 	for (i = -100; i < 0; i++) {
-		if (cba_get(ba, i) != 0) {
-			r = 0;
-			break;
-		}
+		fail_if(cba_get(ba, i) != 0);
 	}
-	cba_free(ba);
-	return r;
-}
+} END_TEST
 
-int
-test_out_of_bounds(void)
-{
-	struct bitarray *ba;
-	int r;
 
-	r = 1;
+START_TEST(test_out_of_bounds) {
 	ba = cba_alloc(10);
-	if (cba_get(ba, 10) >= 0) {
-		r = 0;
-	}
-	if (cba_get(ba, 50) >= 0) {
-		r = 0;
-	}
-	if (cba_get(ba, -11) >= 0) {
-		r = 0;
-	}
-	cba_free(ba);
-	return r;
-}
+	fail_if(cba_get(ba, 10) >= 0);
+	fail_if(cba_get(ba, 50) >= 0);
+	fail_if(cba_get(ba, -11) >= 0);
+} END_TEST
 
-int
-test_cba_set(void)
-{
-	struct bitarray *ba;
-	int r, i;
 
-	r = 1;
+START_TEST(test_cba_set) {
+	int i;
+
 	ba = cba_alloc(100);
 	for (i = 0; i < 100; i++) {
-		if (cba_get(ba, i) != 0) {
-			r = 0;
-			break;
-		}
-		if (cba_set(ba, i) < 0) {
-			r = 0;
-			break;
-		}
-		if (cba_get(ba, i) != 1) {
-			r = 0;
-			break;
-		}
+		fail_if(cba_get(ba, i) != 0);
+		fail_if(cba_set(ba, i) < 0);
+		fail_if(cba_get(ba, i) != 1);
 	}
-	cba_free(ba);
-	return r;
-}
+} END_TEST
 
-int
-test_cba_clear(void)
-{
-	struct bitarray *ba;
-	int r, i;
 
-	r = 1;
+START_TEST(test_cba_clear) {
+	int i;
+
 	ba = cba_alloc(100);
 	for (i = 0; i < 100; i++) {
-		if (cba_clear(ba, i) < 0) {
-			r = 0;
-			break;
-		}
-		if (cba_get(ba, i) != 0) {
-			r = 0;
-			break;
-		}
+		fail_if(cba_clear(ba, i) < 0);
+		fail_if(cba_get(ba, i) != 0);
 	}
-	cba_free(ba);
-	return r;
-}
+} END_TEST
 
-int
-test_set_then_clear(void)
-{
-	struct bitarray *ba;
-	int r, i;
 
-	r = 1;
+START_TEST(test_set_then_clear) {
+	int i;
+
 	ba = cba_alloc(100);
 	for (i = 0; i < 100; i++) {
-		if (cba_set(ba, i) < 0) {
-			r = 0;
-			break;
-		}
-		if (cba_get(ba, i) != 1) {
-			r = 0;
-			break;
-		}
-		if (cba_clear(ba, i) < 0) {
-			r = 0;
-			break;
-		}
-		if (cba_get(ba, i) != 0) {
-			r = 0;
-			break;
-		}
+		fail_if(cba_set(ba, i) < 0);
+		fail_if(cba_get(ba, i) != 1);
+		fail_if(cba_clear(ba, i) < 0);
+		fail_if(cba_get(ba, i) != 0);
 	}
-	cba_free(ba);
-	return r;
-}
+} END_TEST
 
-
-void fail(const char *s);
-void pass(const char *s);
-
-#define RUN_TEST(t)	  \
-	do { \
-		int r = t(); \
-		if (r) { \
-			pass(#t"()"); \
-			passed++; \
-		} else { \
-			fail(#t"()"); \
-			failed++; \
-		} \
-	} while(0)
 
 int
 main(void)
@@ -209,16 +115,4 @@ main(void)
 	printf("%d tests, %d passed, %d failed\n", failed + passed, passed, failed);
 
 	return (failed ? 1 : 0);
-}
-
-void
-fail(const char *s)
-{
-	printf("FAIL: %s\n", s);
-}
-
-void
-pass(const char *s)
-{
-	printf("PASS: %s\n", s);
 }
