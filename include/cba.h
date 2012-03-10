@@ -24,4 +24,10 @@ int cba_clear(struct bitarray *ba, long i);
 /* Clear all bits in ba. */
 void cba_clear_all(struct bitarray *ba);
 
+/* Toggle bit i in ba. Return 1 on success, -1 on error. */
+int cba_toggle(struct bitarray *ba, long i);
+
+/* Toggle all bits in ba. */
+void cba_toggle_all(struct bitarray *ba);
+
 #endif

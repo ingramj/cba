@@ -129,3 +129,25 @@ cba_clear_all(struct bitarray *ba)
 		memset(ba->array, 0x00, (ba->array_sz * UINT_BYTES));
 	}
 }
+
+
+int
+cba_toggle(struct bitarray *ba, long i)
+{
+	i = index(ba, i);
+	if (i < 0) return -1;
+
+	ba->array[i / UINT_BITS] ^= bitmask(i);
+	return 1;
+}
+
+
+void
+cba_toggle_all(struct bitarray *ba)
+{
+	long i;
+
+	for (i = 0; i < ba->array_sz; i++) {
+		ba->array[i] ^= UINT_MAX;
+	}
+}
