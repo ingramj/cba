@@ -46,6 +46,14 @@ test/test_cba-debug.o: test/test_cba.c include/cba.h test/test_cba.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 test/test_cba-debug: test/test_cba-debug.o lib/libcba-debug.a
 
+
+# Examples
+.PHONY: examples
+examples: examples/bloom
+
+examples/bloom: examples/bloom.o lib/libcba.a
+examples/bloom.o: examples/bloom.c include/cba.h
+
 .PHONY: clean
 clean:
-	rm -f src/*.o test/*.o test/test_cba test/test_cba-debug $(LIBS) $(DBLIBS)
+	rm -f src/*.o test/*.o examples/*.o test/test_cba test/test_cba-debug examples/bloom $(LIBS) $(DBLIBS)
