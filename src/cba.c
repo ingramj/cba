@@ -101,6 +101,16 @@ cba_set(struct bitarray *ba, long i)
 }
 
 
+void
+cba_set_all(struct bitarray *ba)
+{
+	/* this test may not be necessary, but just in case... */
+	if (ba && ba->array) {
+		memset(ba->array, 0xff, (ba->array_sz * UINT_BYTES));
+	}
+}
+
+
 int
 cba_clear(struct bitarray *ba, long i)
 {
@@ -109,16 +119,6 @@ cba_clear(struct bitarray *ba, long i)
 
 	ba->array[i / UINT_BITS] &= ~bitmask(i);
 	return 1;
-}
-
-
-void
-cba_set_all(struct bitarray *ba)
-{
-	/* this test may not be necessary, but just in case... */
-	if (ba && ba->array) {
-		memset(ba->array, 0xff, (ba->array_sz * UINT_BYTES));
-	}
 }
 
 

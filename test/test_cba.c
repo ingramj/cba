@@ -48,16 +48,16 @@ START_TEST(test_negative_indices) {
 
 	ba = cba_alloc(100);
 	for (i = -100; i < 0; i++) {
-		fail_if(cba_get(ba, i) != 0);
+		fail_unless(cba_get(ba, i) == 0);
 	}
 } END_TEST
 
 
 START_TEST(test_out_of_bounds) {
 	ba = cba_alloc(10);
-	fail_if(cba_get(ba, 10) >= 0);
-	fail_if(cba_get(ba, 50) >= 0);
-	fail_if(cba_get(ba, -11) >= 0);
+	fail_unless(cba_get(ba, 10) < 0);
+	fail_unless(cba_get(ba, 50) < 0);
+	fail_unless(cba_get(ba, -11) < 0);
 } END_TEST
 
 
@@ -66,33 +66,9 @@ START_TEST(test_cba_set) {
 
 	ba = cba_alloc(100);
 	for (i = 0; i < 100; i++) {
-		fail_if(cba_get(ba, i) != 0);
+		fail_unless(cba_get(ba, i) == 0);
 		fail_if(cba_set(ba, i) < 0);
-		fail_if(cba_get(ba, i) != 1);
-	}
-} END_TEST
-
-
-START_TEST(test_cba_clear) {
-	int i;
-
-	ba = cba_alloc(100);
-	for (i = 0; i < 100; i++) {
-		fail_if(cba_clear(ba, i) < 0);
-		fail_if(cba_get(ba, i) != 0);
-	}
-} END_TEST
-
-
-START_TEST(test_set_then_clear) {
-	int i;
-
-	ba = cba_alloc(100);
-	for (i = 0; i < 100; i++) {
-		fail_if(cba_set(ba, i) < 0);
-		fail_if(cba_get(ba, i) != 1);
-		fail_if(cba_clear(ba, i) < 0);
-		fail_if(cba_get(ba, i) != 0);
+		fail_unless(cba_get(ba, i) == 1);
 	}
 } END_TEST
 
@@ -103,7 +79,7 @@ START_TEST(test_cba_set_all) {
 	ba = cba_alloc(100);
 	cba_set_all(ba);
 	for (i = 0; i < 100; i++) {
-		fail_if(cba_get(ba, i) != 1);
+		fail_unless(cba_get(ba, i) == 1);
 	}
 } END_TEST
 
@@ -114,13 +90,24 @@ START_TEST(test_set_all_empty) {
 } END_TEST
 
 
+START_TEST(test_cba_clear) {
+	int i;
+
+	ba = cba_alloc(100);
+	for (i = 0; i < 100; i++) {
+		fail_if(cba_clear(ba, i) < 0);
+		fail_unless(cba_get(ba, i) == 0);
+	}
+} END_TEST
+
+
 START_TEST(test_cba_clear_all) {
 	int i;
 
 	ba = cba_alloc(100);
 	cba_clear_all(ba); /* should do nothing. */
 	for (i = 0; i < 100; i++) {
-		fail_if(cba_get(ba, i) != 0);
+		fail_unless(cba_get(ba, i) == 0);
 	}
 } END_TEST
 
@@ -131,17 +118,30 @@ START_TEST(test_clear_all_empty) {
 } END_TEST
 
 
+START_TEST(test_set_then_clear) {
+	int i;
+
+	ba = cba_alloc(100);
+	for (i = 0; i < 100; i++) {
+		fail_if(cba_set(ba, i) < 0);
+		fail_unless(cba_get(ba, i) == 1);
+		fail_if(cba_clear(ba, i) < 0);
+		fail_unless(cba_get(ba, i) == 0);
+	}
+} END_TEST
+
+
 START_TEST(test_set_all_then_clear_all) {
 	int i;
 
 	ba = cba_alloc(100);
 	cba_set_all(ba);
 	for (i = 0; i < 100; i++) {
-		fail_if(cba_get(ba, i) != 1);
+		fail_unless(cba_get(ba, i) == 1);
 	}
 	cba_clear_all(ba);
 	for (i = 0; i < 100; i++) {
-		fail_if(cba_get(ba, i) != 0);
+		fail_unless(cba_get(ba, i) == 0);
 	}
 } END_TEST
 
@@ -158,12 +158,12 @@ main(void)
 	RUN_TEST(test_negative_indices);
 	RUN_TEST(test_out_of_bounds);
 	RUN_TEST(test_cba_set);
-	RUN_TEST(test_cba_clear);
-	RUN_TEST(test_set_then_clear);
 	RUN_TEST(test_cba_set_all);
 	RUN_TEST(test_set_all_empty);
+	RUN_TEST(test_cba_clear);
 	RUN_TEST(test_cba_clear_all);
 	RUN_TEST(test_clear_all_empty);
+	RUN_TEST(test_set_then_clear);
 	RUN_TEST(test_set_all_then_clear_all);
 
 	printf("%d tests, %d passed, %d failed\n", failed + passed, passed, failed);
