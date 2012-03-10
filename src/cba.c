@@ -12,7 +12,7 @@
 #define bitmask(bit) (1 << ((bit) % UINT_BITS))
 
 /* Determine how many uints are needed to store a number of bits. */
-#define uint_array_size(bits) ((bits) <= 0 ? 0 : (((bits) - 1) / UINT_BITS + 1))
+#define uint_array_size(bits) ((bits) <= 0 ? 0 : (long)(((bits) - 1) / UINT_BITS + 1))
 
 struct bitarray {
 	long bits;
