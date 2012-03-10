@@ -12,7 +12,7 @@
 #define bitmask(bit) (1 << ((bit) % UINT_BITS))
 
 /* Determine how many uints are needed to store a number of bits. */
-#define uint_array_size(bits) (bits <= 0 ? 0 : (((bits) - 1) / UINT_BITS + 1))
+#define uint_array_size(bits) ((bits) <= 0 ? 0 : (((bits) - 1) / UINT_BITS + 1))
 
 struct bitarray {
 	long bits;
@@ -21,13 +21,25 @@ struct bitarray {
 };
 
 
+/* Consistency check. */
+static void
+check(struct bitarray *ba)
+{
+	assert(ba);
+	assert(ba->array_sz >= 0);
+	assert(ba->bits >= 0);
+	assert(ba->bits != 0 || ba->array == NULL);
+	assert(ba->array == NULL || ba->bits != 0);
+	assert(ba->array_sz == uint_array_size(ba->bits));
+}
+
+
 /* Check bounds and convert negative indices.
  * Returns converted index, or -1 on out-of-bounds.
  */
 static long
 index(struct bitarray *ba, long i)
 {
-	assert(ba);
 	if (i < 0) i += ba->bits;
 	return (i >= ba->bits) ? -1 : i;
 }
@@ -57,6 +69,7 @@ cba_alloc(long bits)
 			exit(1);
 		}
 	}
+	check(ba);
 	return ba;
 }
 
@@ -74,6 +87,7 @@ cba_free(struct bitarray *ba)
 long
 cba_size(struct bitarray *ba)
 {
+	check(ba);
 	return ba->bits;
 }
 
@@ -83,6 +97,7 @@ cba_get(struct bitarray *ba, long i)
 {
 	unsigned int b;
 
+	check(ba);
 	i = index(ba, i);
 	if (i < 0) return -1;
 	b = ba->array[i / UINT_BITS] & bitmask(i);
@@ -93,6 +108,7 @@ cba_get(struct bitarray *ba, long i)
 int
 cba_set(struct bitarray *ba, long i)
 {
+	check(ba);
 	i = index(ba, i);
 	if (i < 0) return -1;
 
@@ -104,8 +120,9 @@ cba_set(struct bitarray *ba, long i)
 void
 cba_set_all(struct bitarray *ba)
 {
+	check(ba);
 	/* this test may not be necessary, but just in case... */
-	if (ba && ba->array) {
+	if (ba->array) {
 		memset(ba->array, 0xff, (ba->array_sz * UINT_BYTES));
 	}
 }
@@ -114,6 +131,7 @@ cba_set_all(struct bitarray *ba)
 int
 cba_clear(struct bitarray *ba, long i)
 {
+	check(ba);
 	i = index(ba, i);
 	if (i < 0) return -1;
 
@@ -125,7 +143,8 @@ cba_clear(struct bitarray *ba, long i)
 void
 cba_clear_all(struct bitarray *ba)
 {
-	if (ba && ba->array) {
+	check(ba);
+	if (ba->array) {
 		memset(ba->array, 0x00, (ba->array_sz * UINT_BYTES));
 	}
 }
@@ -134,6 +153,7 @@ cba_clear_all(struct bitarray *ba)
 int
 cba_toggle(struct bitarray *ba, long i)
 {
+	check(ba);
 	i = index(ba, i);
 	if (i < 0) return -1;
 
@@ -147,6 +167,7 @@ cba_toggle_all(struct bitarray *ba)
 {
 	long i;
 
+	check(ba);
 	for (i = 0; i < ba->array_sz; i++) {
 		ba->array[i] ^= UINT_MAX;
 	}
