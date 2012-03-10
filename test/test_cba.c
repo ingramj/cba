@@ -170,6 +170,31 @@ START_TEST(test_cba_toggle_all) {
 } END_TEST
 
 
+START_TEST(test_set_even_then_toggle_all) {
+	int i;
+
+	ba = cba_alloc(1000);
+	for (i = 0; i < 1000; i += 2) {
+		fail_unless(cba_set(ba, i));
+	}
+	for (i = 0; i < 1000; i++) {
+		if (i % 2) {
+			fail_unless(cba_get(ba, i) == 0);
+		} else {
+			fail_unless(cba_get(ba, i) == 1);
+		}
+	}
+	cba_toggle_all(ba);
+	for (i = 0; i < 1000; i++) {
+		if (i % 2) {
+			fail_unless(cba_get(ba, i) == 1);
+		} else {
+			fail_unless(cba_get(ba, i) == 0);
+		}
+	}
+} END_TEST
+
+
 int
 main(void)
 {
@@ -191,6 +216,7 @@ main(void)
 	RUN_TEST(test_set_all_then_clear_all);
 	RUN_TEST(test_cba_toggle);
 	RUN_TEST(test_cba_toggle_all);
+	RUN_TEST(test_set_even_then_toggle_all);
 
 	printf("%d tests, %d passed, %d failed\n", failed + passed, passed, failed);
 
