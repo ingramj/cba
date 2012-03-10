@@ -37,7 +37,6 @@ src/cba-debug.o: src/cba.c include/cba.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 .PHONY: debug_test
-debug_test: CFLAGS += $(DBFLAGS)
 debug_test: test/test_cba-debug debug
 	@gdb -batch -ex run $<
 
