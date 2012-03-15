@@ -178,3 +178,17 @@ cba_toggle_all(struct bitarray *ba)
 		ba->array[i] ^= UINT_MAX;
 	}
 }
+
+
+int
+cba_assign(struct bitarray *ba, long i, int v)
+{
+	check(ba);
+	if ((i = index(ba, i)) < 0) return -1;
+	if (v == 0) {
+		ba->array[i / UINT_BITS] &= ~bitmask(i);
+	} else {
+		ba->array[i / UINT_BITS] |= bitmask(i);
+	}
+	return 1;
+}

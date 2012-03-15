@@ -30,4 +30,9 @@ int cba_toggle(struct bitarray *ba, long i);
 /* Toggle all bits in ba. */
 void cba_toggle_all(struct bitarray *ba);
 
+/* Assign bit i in ba. Return 1 on success, -1 on error.
+ * If v == 0, the bit is cleared; otherwise, it is set.
+ */
+int cba_assign(struct bitarray *ba, long i, int v);
+
 #endif
