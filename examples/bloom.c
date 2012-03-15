@@ -60,6 +60,8 @@ insert(struct bloom *bl, const char *s)
 	long h1, h2, h;
 	int i;
 
+	h1 = h2 = 0;
+
 	if (bl->k >= 1) {
 		h1 = hash1(s, bl->m);
 		cba_set(bl->ba, h1);
@@ -80,6 +82,8 @@ lookup(struct bloom *bl, const char *s)
 {
 	long h1, h2;
 	int i;
+
+	h1 = h2 = 0;
 
 	if (bl->k >= 1) {
 		h1 = hash1(s, bl->m);
